@@ -1,94 +1,153 @@
-from fastapi import APIRouter, Request, Response
-from proxy import forward_request, SERVICES
+from typing import Any, Dict
+
+from fastapi import APIRouter, Body, Request
+
+from proxy import SERVICES, forward_request
 
 router = APIRouter()
+JsonBody = Dict[str, Any]
 
-# ─── Restaurant Routes ────────────────────────────────────────────────────────
-@router.api_route("/restaurants", methods=["GET", "POST"], tags=["🍽️ Restaurants"])
-async def restaurants(request: Request):
-    """Gateway → Restaurant Service"""
+
+@router.get("/restaurants", tags=["Restaurants"])
+async def get_restaurants(request: Request):
     return await forward_request(SERVICES["restaurants"], "/restaurants", request)
 
-@router.api_route("/restaurants/{restaurant_id}", methods=["GET", "PUT", "DELETE"], tags=["🍽️ Restaurants"])
-async def restaurant_by_id(restaurant_id: int, request: Request):
-    """Gateway → Restaurant Service (by ID)"""
+
+@router.post("/restaurants", tags=["Restaurants"])
+async def create_restaurant(request: Request, payload: JsonBody = Body(...)):
+    return await forward_request(SERVICES["restaurants"], "/restaurants", request)
+
+
+@router.get("/restaurants/{restaurant_id}", tags=["Restaurants"])
+async def get_restaurant(restaurant_id: str, request: Request):
     return await forward_request(SERVICES["restaurants"], f"/restaurants/{restaurant_id}", request)
 
-# ─── Menu Routes ─────────────────────────────────────────────────────────────
-@router.api_route("/menu", methods=["GET", "POST"], tags=["📋 Menu"])
-async def menu(request: Request):
-    """Gateway → Menu Service"""
+
+@router.put("/restaurants/{restaurant_id}", tags=["Restaurants"])
+async def update_restaurant(restaurant_id: str, request: Request, payload: JsonBody = Body(...)):
+    return await forward_request(SERVICES["restaurants"], f"/restaurants/{restaurant_id}", request)
+
+
+@router.delete("/restaurants/{restaurant_id}", tags=["Restaurants"])
+async def delete_restaurant(restaurant_id: str, request: Request):
+    return await forward_request(SERVICES["restaurants"], f"/restaurants/{restaurant_id}", request)
+
+
+@router.get("/menu", tags=["Menu"])
+async def get_menu(request: Request):
     return await forward_request(SERVICES["menu"], "/menu", request)
 
-@router.api_route("/menu/{item_id}", methods=["GET", "PUT", "DELETE"], tags=["📋 Menu"])
-async def menu_item(item_id: int, request: Request):
-    """Gateway → Menu Service (by item ID)"""
+
+@router.post("/menu", tags=["Menu"])
+async def create_menu_item(request: Request, payload: JsonBody = Body(...)):
+    return await forward_request(SERVICES["menu"], "/menu", request)
+
+
+@router.get("/menu/{item_id}", tags=["Menu"])
+async def get_menu_item(item_id: int, request: Request):
     return await forward_request(SERVICES["menu"], f"/menu/{item_id}", request)
 
-@router.api_route("/menu/restaurant/{restaurant_id}", methods=["GET"], tags=["📋 Menu"])
-async def menu_by_restaurant(restaurant_id: int, request: Request):
-    """Gateway → Menu Service (by restaurant)"""
+
+@router.put("/menu/{item_id}", tags=["Menu"])
+async def update_menu_item(item_id: int, request: Request, payload: JsonBody = Body(...)):
+    return await forward_request(SERVICES["menu"], f"/menu/{item_id}", request)
+
+
+@router.delete("/menu/{item_id}", tags=["Menu"])
+async def delete_menu_item(item_id: int, request: Request):
+    return await forward_request(SERVICES["menu"], f"/menu/{item_id}", request)
+
+
+@router.get("/menu/restaurant/{restaurant_id}", tags=["Menu"])
+async def get_menu_by_restaurant(restaurant_id: int, request: Request):
     return await forward_request(SERVICES["menu"], f"/menu/restaurant/{restaurant_id}", request)
 
-# ─── Order Routes ─────────────────────────────────────────────────────────────
-@router.api_route("/orders", methods=["GET", "POST"], tags=["🛒 Orders"])
-async def orders(request: Request):
-    """Gateway → Order Service"""
+
+@router.get("/orders", tags=["Orders"])
+async def get_orders(request: Request):
     return await forward_request(SERVICES["orders"], "/orders", request)
 
-@router.api_route("/orders/{order_id}", methods=["GET", "DELETE"], tags=["🛒 Orders"])
-async def order_by_id(order_id: int, request: Request):
-    """Gateway → Order Service (by ID)"""
+
+@router.post("/orders", tags=["Orders"])
+async def create_order(request: Request, payload: JsonBody = Body(...)):
+    return await forward_request(SERVICES["orders"], "/orders", request)
+
+
+@router.get("/orders/{order_id}", tags=["Orders"])
+async def get_order(order_id: int, request: Request):
     return await forward_request(SERVICES["orders"], f"/orders/{order_id}", request)
 
-@router.api_route("/orders/{order_id}/status", methods=["PATCH"], tags=["🛒 Orders"])
-async def order_status(order_id: int, request: Request):
-    """Gateway → Order Service (update status)"""
+
+@router.delete("/orders/{order_id}", tags=["Orders"])
+async def delete_order(order_id: int, request: Request):
+    return await forward_request(SERVICES["orders"], f"/orders/{order_id}", request)
+
+
+@router.patch("/orders/{order_id}/status", tags=["Orders"])
+async def update_order_status(order_id: int, request: Request, payload: JsonBody = Body(...)):
     return await forward_request(SERVICES["orders"], f"/orders/{order_id}/status", request)
 
-@router.api_route("/orders/restaurant/{restaurant_id}", methods=["GET"], tags=["🛒 Orders"])
-async def orders_by_restaurant(restaurant_id: int, request: Request):
-    """Gateway → Order Service (by restaurant)"""
+
+@router.get("/orders/restaurant/{restaurant_id}", tags=["Orders"])
+async def get_orders_by_restaurant(restaurant_id: int, request: Request):
     return await forward_request(SERVICES["orders"], f"/orders/restaurant/{restaurant_id}", request)
 
-# ─── Delivery Routes ──────────────────────────────────────────────────────────
-@router.api_route("/deliveries", methods=["GET", "POST"], tags=["🚴 Deliveries"])
-async def deliveries(request: Request):
-    """Gateway → Delivery Service"""
+
+@router.get("/deliveries", tags=["Deliveries"])
+async def get_deliveries(request: Request):
     return await forward_request(SERVICES["deliveries"], "/deliveries", request)
 
-@router.api_route("/deliveries/{delivery_id}", methods=["GET", "DELETE"], tags=["🚴 Deliveries"])
-async def delivery_by_id(delivery_id: int, request: Request):
-    """Gateway → Delivery Service (by ID)"""
+
+@router.post("/deliveries", tags=["Deliveries"])
+async def create_delivery(request: Request, payload: JsonBody = Body(...)):
+    return await forward_request(SERVICES["deliveries"], "/deliveries", request)
+
+
+@router.get("/deliveries/{delivery_id}", tags=["Deliveries"])
+async def get_delivery(delivery_id: int, request: Request):
     return await forward_request(SERVICES["deliveries"], f"/deliveries/{delivery_id}", request)
 
-@router.api_route("/deliveries/{delivery_id}/status", methods=["PATCH"], tags=["🚴 Deliveries"])
-async def delivery_status(delivery_id: int, request: Request):
-    """Gateway → Delivery Service (update status)"""
+
+@router.delete("/deliveries/{delivery_id}", tags=["Deliveries"])
+async def delete_delivery(delivery_id: int, request: Request):
+    return await forward_request(SERVICES["deliveries"], f"/deliveries/{delivery_id}", request)
+
+
+@router.patch("/deliveries/{delivery_id}/status", tags=["Deliveries"])
+async def update_delivery_status(delivery_id: int, request: Request, payload: JsonBody = Body(...)):
     return await forward_request(SERVICES["deliveries"], f"/deliveries/{delivery_id}/status", request)
 
-@router.api_route("/deliveries/order/{order_id}", methods=["GET"], tags=["🚴 Deliveries"])
-async def delivery_by_order(order_id: int, request: Request):
-    """Gateway → Delivery Service (by order)"""
+
+@router.get("/deliveries/order/{order_id}", tags=["Deliveries"])
+async def get_delivery_by_order(order_id: int, request: Request):
     return await forward_request(SERVICES["deliveries"], f"/deliveries/order/{order_id}", request)
 
-# ─── Payment Routes ───────────────────────────────────────────────────────────
-@router.api_route("/payments", methods=["GET", "POST"], tags=["💳 Payments"])
-async def payments(request: Request):
-    """Gateway → Payment Service"""
+
+@router.get("/payments", tags=["Payments"])
+async def get_payments(request: Request):
     return await forward_request(SERVICES["payments"], "/payments", request)
 
-@router.api_route("/payments/{payment_id}", methods=["GET", "DELETE"], tags=["💳 Payments"])
-async def payment_by_id(payment_id: int, request: Request):
-    """Gateway → Payment Service (by ID)"""
+
+@router.post("/payments", tags=["Payments"])
+async def create_payment(request: Request, payload: JsonBody = Body(...)):
+    return await forward_request(SERVICES["payments"], "/payments", request)
+
+
+@router.get("/payments/{payment_id}", tags=["Payments"])
+async def get_payment(payment_id: int, request: Request):
     return await forward_request(SERVICES["payments"], f"/payments/{payment_id}", request)
 
-@router.api_route("/payments/{payment_id}/status", methods=["PATCH"], tags=["💳 Payments"])
-async def payment_status(payment_id: int, request: Request):
-    """Gateway → Payment Service (update status)"""
+
+@router.delete("/payments/{payment_id}", tags=["Payments"])
+async def delete_payment(payment_id: int, request: Request):
+    return await forward_request(SERVICES["payments"], f"/payments/{payment_id}", request)
+
+
+@router.patch("/payments/{payment_id}/status", tags=["Payments"])
+async def update_payment_status(payment_id: int, request: Request, payload: JsonBody = Body(...)):
     return await forward_request(SERVICES["payments"], f"/payments/{payment_id}/status", request)
 
-@router.api_route("/payments/order/{order_id}", methods=["GET"], tags=["💳 Payments"])
-async def payment_by_order(order_id: int, request: Request):
-    """Gateway → Payment Service (by order)"""
+
+@router.get("/payments/order/{order_id}", tags=["Payments"])
+async def get_payment_by_order(order_id: int, request: Request):
     return await forward_request(SERVICES["payments"], f"/payments/order/{order_id}", request)

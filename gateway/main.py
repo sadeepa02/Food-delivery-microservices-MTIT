@@ -23,6 +23,10 @@ It routes requests to the appropriate backend service without exposing individua
 > All endpoints below are proxied through this gateway on **port 8000**.
     """,
     version="1.0.0",
+    servers=[
+        {"url": "http://localhost:8000", "description": "Localhost"},
+        {"url": "http://127.0.0.1:8000", "description": "Loopback"},
+    ],
     contact={
         "name": "Food Delivery Team",
         "email": "fooddelivery@sliit.lk"

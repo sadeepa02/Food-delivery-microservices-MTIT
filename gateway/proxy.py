@@ -23,7 +23,7 @@ async def forward_request(service_url: str, path: str, request: Request) -> Resp
         if key.lower() not in ("host", "content-length")
     }
     
-    async with httpx.AsyncClient(timeout=10.0) as client:
+    async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
         try:
             response = await client.request(
                 method=request.method,
